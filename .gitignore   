@@ -1,0 +1,13 @@
+# Sensitive user config
+.env
+
+# Transmission runtime data
+transmission_config/resume/
+transmission_config/torrents/
+transmission_config/dht.dat
+transmission_config/settings.json
+transmission_config/stats.json
+
+
+# Docker volumes (if mounted locally)
+persistent-files/
