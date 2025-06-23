@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e  # Exit on any error
 
-echo "🌐 Welcome to the 5GB Node Installer"
+echo "🌐 Welcome to the UseMolo Node Installer"
 echo
 
 # 1. Load existing .env if present
@@ -57,9 +57,9 @@ EOF
   echo "✅ New .env file created."
 fi
 
-# 5. Register the node
+# 5. Register or update the node
 echo
-echo "📡 Registering node with 5GB.io..."
+echo "📡 Registering node with UseMolo.com..."
 
 # Build JSON payload
 payload="{
@@ -79,12 +79,14 @@ response=$(curl -s -X POST https://usemolo.com/api/nodes/register \
   -H "Accept: application/json" \
   -d "$payload")
 
-echo
-echo "📝 Registration response:"
-echo "$response"
+# Extract key fields from response
+success=$(echo "$response" | jq -r '.success')
+message=$(echo "$response" | jq -r '.message')
 
-# Abort if registration failed
-if ! echo "$response" | grep -q '"success":true'; then
+echo
+echo "📝 Server response: $message"
+
+if [[ "$success" != "true" ]]; then
   echo "❌ Node registration failed. Aborting installation."
   exit 1
 fi
