@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  node:
+    build: .
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Safe: PHP logic only
+      - ./app/requests:/var/www/html/requests
+
+      # Persistent: never delete even on rebuilds
+      - ./persistent-files:/var/www/html/files
+      - ./caddy-data:/root/.local/share/caddy
+      - ./transmission_config:/var/lib/transmission-daemon/info
+      - ./Caddyfile:/etc/caddy/Caddyfile
+
+      # ✅ NEW: Add scripts directory for persistent bash utilities
+      - ./scripts:/var/www/html/scripts
+
+    environment:
+      - NODE_URL=${NODE_URL}
+      - SECRET=${SECRET}
+    env_file:
+      - .env
+    restart: always
