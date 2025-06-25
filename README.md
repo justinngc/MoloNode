@@ -4,6 +4,8 @@ This is the official node implementation for the **UseMolo** decentralized torre
 
 UseMolo Nodes help distribute and seed content in a censorship-resistant and wallet-authenticated environment. By running a Molo Node, you contribute storage and bandwidth to the network, while staying in control of your node's identity and operations.
 
+🔗 **Try Remote Torrenting:** [https://usemolo.com](https://usemolo.com)
+
 ---
 
 ## 🚀 Features
@@ -22,7 +24,7 @@ UseMolo Nodes help distribute and seed content in a censorship-resistant and wal
 - Docker + Docker Compose
 - `jq` (for JSON parsing in bash)
 - Open ports for torrenting (default Transmission setup)
-- 100GB or more storage.
+- 100GB or more storage
 
 ---
 

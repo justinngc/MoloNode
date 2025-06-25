@@ -1,5 +1,6 @@
 # Sensitive user config
 .env
+**/.DS_Store
 
 # Transmission runtime data
 transmission_config/resume/
