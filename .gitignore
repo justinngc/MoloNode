@@ -1,14 +1,4 @@
-# Sensitive user config
+/transmission_config/*
+!/transmission_config/.gitkeep
 .env
-**/.DS_Store
-
-# Transmission runtime data
-transmission_config/resume/
-transmission_config/torrents/
-transmission_config/dht.dat
-transmission_config/settings.json
-transmission_config/stats.json
-
-
-# Docker volumes (if mounted locally)
-persistent-files/
+app/.DS_Store

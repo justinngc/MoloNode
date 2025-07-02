@@ -86,7 +86,7 @@ $domain = $_SERVER['HTTP_HOST'];
   <script>
   async function loadStats() {
     try {
-      const res = await fetch('/requests/node-stats.php');
+      const res = await fetch('node-stats.php');
       const data = await res.json();
 
       document.getElementById('node-info').innerHTML = `

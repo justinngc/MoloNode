@@ -1,0 +1,44 @@
+server {
+    listen 80;
+    server_name ${NODE_URL};
+    root /var/www/html;
+    index index.php index.html;
+
+    # Default SPA entry
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    #Protected file serving (used with X-Accel-Redirect)
+    location /protected/ {
+        internal;
+        alias /var/www/html/files/;
+
+        if ($http_origin ~* (https://usemolo\.test|https://usemolo\.com)) {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+            add_header 'Access-Control-Expose-Headers' 'Content-Disposition' always;
+        }
+    }
+
+    #PHP scripts (including list.php)
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_pass molo_php:9000;
+        fastcgi_index index.php;
+    }
+
+    #Transmission proxy
+    location /transmission/ {
+        proxy_pass http://molo_transmission:9091/transmission/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    #Deny .ht* files
+    location ~ /\.ht {
+        deny all;
+    }
+}

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Set output paths
-YABS_SCRIPT="/var/www/html/requests/yabs.sh"
-YABS_BANDWIDTH="/var/www/html/requests/bandwidth.json"
+YABS_SCRIPT="/var/www/html/yabs.sh"
+YABS_BANDWIDTH="/var/www/html/bandwidth.json"
 
 echo "🚀 Running YABS iperf3 test only..."
 chmod +x "$YABS_SCRIPT"

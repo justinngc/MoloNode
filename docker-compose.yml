@@ -1,27 +1,97 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  node:
-    build: .
+  nginx:
+    image: nginx:latest
+    container_name: molo_nginx
+    restart: unless-stopped
+    volumes:
+      - ./nginx/conf.d/default.conf.template:/etc/nginx/conf.d/default.conf.template
+      - ./app:/var/www/html
+      - ./transmission/data/completed:/var/www/html/files
+      - ./nginx/init.sh:/init.sh
+    networks:
+      - molonet
+    depends_on:
+      - php
+    environment:
+      - NODE_URL=${NODE_URL}
+      - SECRET=${SECRET}
+    entrypoint: ["/bin/bash", "/init.sh"]
+    expose:
+      - "80"
+
+  php:
+    build:
+      context: .  
+      dockerfile: Dockerfile
+    container_name: molo_php
+    restart: unless-stopped
+    volumes:
+      - ./app:/var/www/html
+      - ./transmission/data/completed:/var/www/html/files:ro
+      - ./php/init.sh:/init.sh
+    networks:
+      - molonet
+    environment:
+      - NODE_URL=${NODE_URL}
+      - SECRET=${SECRET}
+    entrypoint: ["/bin/bash", "/init.sh"]
+
+
+  transmission:
+    image: haugene/transmission-openvpn
+    container_name: molo_transmission
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - OPENVPN_PROVIDER=CUSTOM
+      - OPENVPN_CONFIG=default
+      - OPENVPN_USERNAME=myvpnuser
+      - OPENVPN_PASSWORD=myvpnpass
+      - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=true
+      - TRANSMISSION_RPC_USERNAME=node
+      - TRANSMISSION_RPC_PASSWORD=${SECRET}
+      - TRANSMISSION_WATCH_DIR=/data/watch
+      - TRANSMISSION_DOWNLOAD_DIR=/data/completed
+      - TRANSMISSION_INCOMPLETE_DIR=/data/incomplete
+      - TRANSMISSION_HOME=/config
+      - LOCAL_NETWORK=192.168.0.0/16
+      - TRANSMISSION_BLOCKLIST_URL=https://github.com/Naunter/BT_BlockLists/raw/master/bt_blocklists.gz
+      - TRANSMISSION_PEER_LIMIT_GLOBAL=405
+      - TRANSMISSION_LIMIT_PER_TORRENT=62
+      - TRANSMISSION_RATIO_LIMIT=0
+      - TRANSMISSION_LIMIT_ENABLED=true
+      - TRANSMISSION_SPEED_LIMIT_DOWN=125000
+      - TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED=false
+      - TRANSMISSION_LIMIT_UP=1000
+      - TRANSMISSION_LIMIT_UP_ENABLED=true
+
+    volumes:
+      - ./transmission/data:/data
+      - ./transmission_config:/config
+      - ./transmission_config/openvpn:/etc/openvpn/custom
+    networks:
+      - molonet
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:latest
+    container_name: molo_caddy
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      # Safe: PHP logic only
-      - ./app/requests:/var/www/html/requests
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - molonet
 
-      # Persistent: never delete even on rebuilds
-      - ./persistent-files:/var/www/html/files
-      - ./caddy-data:/root/.local/share/caddy
-      - ./transmission_config:/var/lib/transmission-daemon/info
-      - ./Caddyfile:/etc/caddy/Caddyfile
+networks:
+  molonet:
 
-      # ✅ NEW: Add scripts directory for persistent bash utilities
-      - ./scripts:/var/www/html/scripts
-
-    environment:
-      - NODE_URL=${NODE_URL}
-      - SECRET=${SECRET}
-    env_file:
-      - .env
-    restart: always
+volumes:
+  caddy_data:
+  caddy_config:
