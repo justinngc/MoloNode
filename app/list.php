@@ -22,6 +22,57 @@ if (!$payload || !isset($payload['hash'], $payload['file'], $payload['expires_at
     exit;
 }
 
+// Step 2.5: Limit to first 3 IPs per token
+function getClientIp(): string
+{
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $forwarded = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+        return trim($forwarded);
+    }
+    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+}
+
+try {
+    $db = new PDO('sqlite:' . __DIR__ . '/access_control.sqlite', null, null, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    ]);
+
+    $db->exec('CREATE TABLE IF NOT EXISTS token_ips (
+        token TEXT,
+        ip    TEXT,
+        PRIMARY KEY (token, ip)
+    )');
+
+    $clientIp = getClientIp();
+    $tokenKey = hash('sha256', $_GET['token']); // hash to avoid huge raw token storage
+
+    // Check if this IP already recorded for this token
+    $stmt = $db->prepare('SELECT 1 FROM token_ips WHERE token = :token AND ip = :ip LIMIT 1');
+    $stmt->execute(['token' => $tokenKey, 'ip' => $clientIp]);
+    $isKnown = (bool) $stmt->fetchColumn();
+
+    if (!$isKnown) {
+        // Count existing unique IPs for this token
+        $stmt = $db->prepare('SELECT COUNT(*) FROM token_ips WHERE token = :token');
+        $stmt->execute(['token' => $tokenKey]);
+        $ipCount = (int) $stmt->fetchColumn();
+
+        if ($ipCount >= 3) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Limit Reached. Please Generate a new download link.']);
+            exit;
+        }
+
+        // Insert new IP
+        $insert = $db->prepare('INSERT INTO token_ips (token, ip) VALUES (:token, :ip)');
+        $insert->execute(['token' => $tokenKey, 'ip' => $clientIp]);
+    }
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Internal server error']);
+    exit;
+}
+
 // Step 3: Check expiration
 if (time() > $payload['expires_at']) {
     http_response_code(403);
@@ -45,17 +96,7 @@ $baseDir = '/var/www/html/files';
 $fullPath = realpath($baseDir . '/' . $payload['file']);
 
 // Step 6: Validate resolved path
-
-// list.php  (inside Step 6)
-error_log("Requested file: " . $payload['file']);
-error_log("Resolved path: " . $fullPath);
-error_log("Exists: " . (file_exists($fullPath) ? "yes" : "no"));
-error_log("Path check: " . (strpos($fullPath, realpath($baseDir)) === 0 ? "pass" : "fail"));
-
-
-
 if (!$fullPath || strpos($fullPath, realpath($baseDir)) !== 0 || !is_file($fullPath)) {
-    // 🔍 Optional: Debug logging (disable in production)
     error_log("Requested file: " . $payload['file']);
     error_log("Resolved path: " . $fullPath);
     error_log("Exists: " . (file_exists($fullPath) ? "yes" : "no"));

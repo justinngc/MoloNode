@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+
+sudo chown www-data:www-data /var/www/html
+sudo chmod 755 /var/www/html
+
 echo "🌀 Rendering Nginx config from template..."
 
 # Replace ${NODE_URL} using envsubst
