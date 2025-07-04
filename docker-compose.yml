@@ -66,7 +66,8 @@ services:
       - TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED=false
       - TRANSMISSION_LIMIT_UP=1000
       - TRANSMISSION_LIMIT_UP_ENABLED=true
-
+      - TRANSMISSION_BIND_ADDRESS_IPV4=0.0.0.0
+      - TRANSMISSION_DOWNLOAD_QUEUE_SIZE=100
     volumes:
       - ./transmission/data:/data
       - ./transmission_config:/config
