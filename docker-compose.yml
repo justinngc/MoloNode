@@ -41,6 +41,10 @@ services:
   transmission:
     image: linuxserver/transmission
     container_name: molo_transmission
+    volumes:
+      - ./transmission/data:/data
+      - ./transmission/transmission_config:/config
+      - ./transmission/init.sh:/init.sh
     cap_add:
       - NET_ADMIN
     environment:
@@ -49,9 +53,7 @@ services:
       - TZ=Europe/London     # Adjust timezone
       - USER=node
       - PASS=${SECRET}
-    volumes:
-      - ./transmission/data:/data
-      - ./transmission_config:/config
+    entrypoint: ["/bin/bash", "/init.sh"]
     networks:
       - molonet
     restart: unless-stopped
