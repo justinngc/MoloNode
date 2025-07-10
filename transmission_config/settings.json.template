@@ -44,7 +44,7 @@
     "queue-stalled-minutes": 30,
     "ratio-limit": 0,
     "ratio-limit-enabled": true,
-    "rename-partial-files": true,
+    "rename-partial-files": false,
     "rpc-authentication-required": true,
     "rpc-bind-address": "0.0.0.0",
     "rpc-enabled": true,
