@@ -41,6 +41,8 @@ services:
   transmission:
     image: linuxserver/transmission
     container_name: molo_transmission
+    cap_add:
+      - NET_ADMIN
     environment:
       - PUID=1000            # Host user ID, adjust to match your file ownership
       - PGID=1000            # Host group ID
