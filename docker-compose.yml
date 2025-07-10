@@ -38,13 +38,12 @@ services:
       - SECRET=${SECRET}
     entrypoint: ["/bin/bash", "/init.sh"]
 
-
   transmission:
     image: linuxserver/transmission
     container_name: molo_transmission
     cap_add:
       - NET_ADMIN
-      environment:
+    environment:
       - PUID=1000            # Host user ID, adjust to match your file ownership
       - PGID=1000            # Host group ID
       - TZ=Europe/London     # Adjust timezone
@@ -63,13 +62,12 @@ services:
       - TRANSMISSION_SPEED_LIMIT_UP=1000
       - TRANSMISSION_SPEED_LIMIT_UP_ENABLED=true
       - TRANSMISSION_BLOCKLIST_URL=https://github.com/Naunter/BT_BlockLists/raw/master/bt_blocklists.gz
-
-  volumes:
-    - ./transmission/data:/data
-    - ./transmission_config:/config
-  networks:
-    - molonet
-  restart: unless-stopped
+    volumes:
+      - ./transmission/data:/data
+      - ./transmission_config:/config
+    networks:
+      - molonet
+    restart: unless-stopped
 
   caddy:
     image: caddy:latest
