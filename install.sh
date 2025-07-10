@@ -183,18 +183,6 @@ chmod +x ./php/init.sh
 echo
 echo "🚀 Starting Docker containers..."
 docker-compose up -d
-
-sleep 2
-docker-compose stop transmission
-sleep 2 
-echo "🛠️  Deleting old Transmission settings.json"
-rm -rf ./transmission_config/settings.json
-sleep 2
-echo "🛠️  Generating updated Transmission settings.json"
-
-# Copy and replace placeholder every time
-sed "s/___SECRET___/$SECRET/g" ./transmission_config/settings.json.template > ./transmission_config/settings.json
-
 echo "✅ settings.json created with updated RPC secret."
 docker-compose start transmission
 

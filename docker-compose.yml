@@ -47,6 +47,8 @@ services:
       - PUID=1000            # Host user ID, adjust to match your file ownership
       - PGID=1000            # Host group ID
       - TZ=Europe/London     # Adjust timezone
+      - USER=node
+      - PASS=${SECRET}
     volumes:
       - ./transmission/data:/data
       - ./transmission_config:/config
