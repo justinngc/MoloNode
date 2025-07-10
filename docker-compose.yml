@@ -40,15 +40,14 @@ services:
 
 
   transmission:
-    image: haugene/transmission-openvpn
+    image: linuxserver/transmission
     container_name: molo_transmission
     cap_add:
       - NET_ADMIN
-    environment:
-      - OPENVPN_PROVIDER=CUSTOM
-      - OPENVPN_CONFIG=default
-      - OPENVPN_USERNAME=myvpnuser
-      - OPENVPN_PASSWORD=myvpnpass
+      environment:
+      - PUID=1000            # Host user ID, adjust to match your file ownership
+      - PGID=1000            # Host group ID
+      - TZ=Europe/London     # Adjust timezone
       - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=true
       - TRANSMISSION_RPC_USERNAME=node
       - TRANSMISSION_RPC_PASSWORD=${SECRET}
@@ -56,25 +55,21 @@ services:
       - TRANSMISSION_DOWNLOAD_DIR=/data/completed
       - TRANSMISSION_INCOMPLETE_DIR=/data/incomplete
       - TRANSMISSION_HOME=/config
-      - LOCAL_NETWORK=192.168.0.0/16
-      - TRANSMISSION_BLOCKLIST_URL=https://github.com/Naunter/BT_BlockLists/raw/master/bt_blocklists.gz
       - TRANSMISSION_PEER_LIMIT_GLOBAL=405
-      - TRANSMISSION_LIMIT_PER_TORRENT=62
+      - TRANSMISSION_PEER_LIMIT_PER_TORRENT=62
       - TRANSMISSION_RATIO_LIMIT=0
-      - TRANSMISSION_LIMIT_ENABLED=true
       - TRANSMISSION_SPEED_LIMIT_DOWN=125000
       - TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED=false
-      - TRANSMISSION_LIMIT_UP=1000
-      - TRANSMISSION_LIMIT_UP_ENABLED=true
-      - TRANSMISSION_BIND_ADDRESS_IPV4=0.0.0.0
-      - TRANSMISSION_DOWNLOAD_QUEUE_SIZE=100
-    volumes:
-      - ./transmission/data:/data
-      - ./transmission_config:/config
-      - ./transmission_config/openvpn:/etc/openvpn/custom
-    networks:
-      - molonet
-    restart: unless-stopped
+      - TRANSMISSION_SPEED_LIMIT_UP=1000
+      - TRANSMISSION_SPEED_LIMIT_UP_ENABLED=true
+      - TRANSMISSION_BLOCKLIST_URL=https://github.com/Naunter/BT_BlockLists/raw/master/bt_blocklists.gz
+
+  volumes:
+    - ./transmission/data:/data
+    - ./transmission_config:/config
+  networks:
+    - molonet
+  restart: unless-stopped
 
   caddy:
     image: caddy:latest
