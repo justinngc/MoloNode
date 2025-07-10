@@ -155,14 +155,23 @@ EONGINX
 
 echo "✅ Nginx config updated."
 
+echo "🛠️  Creating settings.json from template and replacing secret..."
+
+# Copy and replace placeholder every time
+sed "s/___SECRET___/$SECRET/g" ./transmission_config/settings.json.template > ./transmission_config/settings.json
+
+echo "✅ settings.json created with updated RPC secret."
+
 # Ask if user wants to rebuild
 echo
 read -p "🔁 Do you want to rebuild Docker images from scratch? (y/N): " do_rebuild
 
 if [[ "$do_rebuild" =~ ^[Yy]$ ]]; then
   echo "🧹 Stopping and cleaning previous Docker containers and volumes..."
-  docker-compose down
+  docker-compose down -v
   docker container prune -f
+  docker volume prune -f
+  docker network prune -f
   echo "🔨 Rebuilding Docker images..."
   docker-compose build --no-cache
 else
