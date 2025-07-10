@@ -52,7 +52,6 @@ services:
     volumes:
       - ./transmission/data:/data
       - ./transmission/transmission_config:/config
-      - ./transmission/init.sh:/init.sh
     networks:
       - molonet
     restart: unless-stopped

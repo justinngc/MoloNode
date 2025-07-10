@@ -4,6 +4,27 @@ set -e
 echo "🌐 Welcome to the UseMolo Node Installer"
 echo
 
+echo "Fixing permissions for Transmission data and config..."
+
+# Set variables
+PUID=1000
+PGID=1000
+
+# Change ownership
+chown -R $PUID:$PGID ./transmission/data
+chown -R $PUID:$PGID ./transmission_config
+
+# Set directory permissions
+find ./transmission/data -type d -exec chmod 755 {} +
+find ./transmission/data -type f -exec chmod 644 {} +
+find ./transmission_config -type d -exec chmod 755 {} +
+find ./transmission_config -type f -exec chmod 644 {} +
+
+echo "Permissions and ownership fixed!"
+
+exit 0
+
+
 # Check and install jq
 if ! command -v jq &> /dev/null; then
   echo "⚙️ jq not found. Installing..."
