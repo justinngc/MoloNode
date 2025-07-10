@@ -155,13 +155,6 @@ EONGINX
 
 echo "✅ Nginx config updated."
 
-echo "🛠️  Creating settings.json from template and replacing secret..."
-
-# Copy and replace placeholder every time
-sed "s/___SECRET___/$SECRET/g" ./transmission_config/settings.json.template > ./transmission_config/settings.json
-
-echo "✅ settings.json created with updated RPC secret."
-
 # Ask if user wants to rebuild
 echo
 read -p "🔁 Do you want to rebuild Docker images from scratch? (y/N): " do_rebuild
@@ -190,6 +183,14 @@ chmod +x ./php/init.sh
 echo
 echo "🚀 Starting Docker containers..."
 docker-compose up -d
+docker-compose stop transmission
+echo "🛠️  Creating settings.json from template and replacing secret..."
+
+# Copy and replace placeholder every time
+sed "s/___SECRET___/$SECRET/g" ./transmission_config/settings.json.template > ./transmission_config/settings.json
+
+echo "✅ settings.json created with updated RPC secret."
+docker-compose start transmission
 
 echo
 echo "✅ Node '$NODE_NAME' is now live at: https://$NODE_URL"
