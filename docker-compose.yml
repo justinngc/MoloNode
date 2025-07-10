@@ -41,27 +41,10 @@ services:
   transmission:
     image: linuxserver/transmission
     container_name: molo_transmission
-    cap_add:
-      - NET_ADMIN
     environment:
       - PUID=1000            # Host user ID, adjust to match your file ownership
       - PGID=1000            # Host group ID
       - TZ=Europe/London     # Adjust timezone
-      - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=true
-      - TRANSMISSION_RPC_USERNAME=node
-      - TRANSMISSION_RPC_PASSWORD=${SECRET}
-      - TRANSMISSION_WATCH_DIR=/data/watch
-      - TRANSMISSION_DOWNLOAD_DIR=/data/completed
-      - TRANSMISSION_INCOMPLETE_DIR=/data/incomplete
-      - TRANSMISSION_HOME=/config
-      - TRANSMISSION_PEER_LIMIT_GLOBAL=405
-      - TRANSMISSION_PEER_LIMIT_PER_TORRENT=62
-      - TRANSMISSION_RATIO_LIMIT=0
-      - TRANSMISSION_SPEED_LIMIT_DOWN=125000
-      - TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED=false
-      - TRANSMISSION_SPEED_LIMIT_UP=1000
-      - TRANSMISSION_SPEED_LIMIT_UP_ENABLED=true
-      - TRANSMISSION_BLOCKLIST_URL=https://github.com/Naunter/BT_BlockLists/raw/master/bt_blocklists.gz
     volumes:
       - ./transmission/data:/data
       - ./transmission_config:/config
