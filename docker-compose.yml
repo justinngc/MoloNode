@@ -53,7 +53,6 @@ services:
       - ./transmission/data:/data
       - ./transmission/transmission_config:/config
       - ./transmission/init.sh:/init.sh
-    entrypoint: ["/bin/bash", "/init.sh"]
     networks:
       - molonet
     restart: unless-stopped
