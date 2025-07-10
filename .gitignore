@@ -1,4 +1,2 @@
-/transmission_config/*
-!/transmission_config/.gitkeep
 .env
 app/.DS_Store
