@@ -22,8 +22,6 @@ find ./transmission_config -type f -exec chmod 644 {} +
 
 echo "Permissions and ownership fixed!"
 
-exit 0
-
 
 # Check and install jq
 if ! command -v jq &> /dev/null; then
