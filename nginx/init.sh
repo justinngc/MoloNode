@@ -2,8 +2,8 @@
 set -e
 
 
-sudo chown www-data:www-data /var/www/html
-sudo chmod 755 /var/www/html
+chown www-data:www-data /var/www/html
+chmod 755 /var/www/html
 
 echo "🌀 Rendering Nginx config from template..."
 
