@@ -109,6 +109,6 @@ if (!$fullPath || strpos($fullPath, realpath($baseDir)) !== 0 || !is_file($fullP
 
 // Step 7: Serve file
 header('Content-Type: application/octet-stream');
-header('Content-Disposition: inline; filename="' . basename($fullPath) . '"');
+header('Content-Disposition: attachment; filename="' . basename($fullPath) . '"');
 header('X-Accel-Redirect: /protected/' . $payload['file']);
 exit;
